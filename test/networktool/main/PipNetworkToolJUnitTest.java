@@ -16,14 +16,12 @@ import org.junit.Test;
 import pip.app.gateaway.InternetProtocol;
 import pip.app.gateaway.InternetProtocol.InvalidIpAdderssV4FormatException;
 import pip.app.gateaway.NetworkConfigurationPresenter;
-import pip.app.gateaway.NetworkConfigurationGatewayImpl;
-import pip.app.process.ProcessInvokerImpl;
-import pip.app.process.NotInvokedProcessYetException;
-import pip.main.boundary.textual.IODelivery;
-import pip.main.adapter.CommandAdapter;
-import pip.main.adapter.CommandAdapter.CommandIsNotFoundException;
-import pip.main.adapter.CommandAdapter.EmptyCommandFoundException;
-import pip.app.gateaway.NetworkConfigurationGateway;
+import pip.app.gateaway.ConfigurationGatewayImpl;
+import pip.app.process.NotInvokedPythonProcessYetException;
+import pip.main.interactor.IODelivery;
+import pip.app.gateaway.ConfigurationGateway;
+import pip.main.interactor.IODelivery.CommandIsNotFoundException;
+import pip.main.interactor.IODelivery.EmptyCommandFoundException;
 
 /**
  *
@@ -43,25 +41,29 @@ public class PipNetworkToolJUnitTest {
     }
     
     @Test
-    public void testAvailableCommands() throws IOException, NotInvokedProcessYetException, 
+    public void testAvailableCommands() throws IOException, NotInvokedPythonProcessYetException, 
             CommandIsNotFoundException, InvalidIpAdderssV4FormatException, EmptyCommandFoundException{
         ui.relayCommand("ipaddr");
         ui.relayCommand("interfaces");
-        ui.relayCommand("network_card_conf","{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
-        ui.relayCommand("network_card_conf","{FEA67A50-93FD-46BE-AE31-BD927CD1C2F4}");
+        ui.relayCommand("network_interface","{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
+        ui.relayCommand("network_interface","{FEA67A50-93FD-46BE-AE31-BD927CD1C2F4}");
+        ui.relayCommand("network_interface", "--set-default", "{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
         ui.relayCommand("list_hosts","192.168.1.0", "255.255.255.0");
     }
     
     @Test(expected = EmptyCommandFoundException.class)
-    public void givenEmptyCommand_throwEmptyCommandFoundException() throws IOException, NotInvokedProcessYetException, 
-            CommandIsNotFoundException, InvalidIpAdderssV4FormatException, EmptyCommandFoundException{
+    public void givenEmptyCommand_throwEmptyCommandFoundException() throws IOException, 
+            NotInvokedPythonProcessYetException, CommandIsNotFoundException, InvalidIpAdderssV4FormatException, 
+            EmptyCommandFoundException{
         ui.relayCommand("");
     }
     
     @Ignore
     @Test
-    public void createNetworkInfoPresenterFromJSON() throws IOException, NotInvokedProcessYetException, InternetProtocol.InvalidIpAdderssV4FormatException, CommandAdapter.CommandIsNotFoundException{
-        NetworkConfigurationGateway gateway = new NetworkConfigurationGatewayImpl();
+    public void createNetworkInfoPresenterFromJSON() throws IOException, NotInvokedPythonProcessYetException, 
+            InternetProtocol.InvalidIpAdderssV4FormatException, CommandIsNotFoundException{
+        
+        ConfigurationGateway gateway = new ConfigurationGatewayImpl();
         NetworkConfigurationPresenter info = gateway.createNetworkPresenter("{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
         Assert.assertEquals("{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}", info.interfaceIdentifier());
         Assert.assertEquals("70:5a:0f:29:58:5f", info.physicalAddress());

@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pip.app.gateaway;
+package pip.main.interactor;
 
 /**
  *
  * @author User
  */
-public class NetworkPingGatewayImpl implements NetworkPingGateway{
+public class CommandSet {
     
 }

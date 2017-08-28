@@ -8,26 +8,26 @@ package pip.app.gateaway;
 import pip.app.process.ProcessInvoker;
 import java.io.IOException;
 import pip.app.gateaway.InternetProtocol.InvalidIpAdderssV4FormatException;
-import pip.app.process.NotInvokedProcessYetException;
-import pip.app.process.ProcessInvokerImpl;
+import pip.app.process.NotInvokedPythonProcessYetException;
+import pip.app.process.PythonProcessInvoker;
 
 /**
  *
  * @author User
  */
-public class NetworkConfigurationGatewayImpl implements NetworkConfigurationGateway {
+public class ConfigurationGatewayImpl implements ConfigurationGateway {
     
     @Override
-    public String[] hostname() throws IOException, NotInvokedProcessYetException {
-        ProcessInvoker invoker = new ProcessInvokerImpl();
+    public String[] hostname() throws IOException, NotInvokedPythonProcessYetException {
+        ProcessInvoker invoker = new PythonProcessInvoker();
         invoker.exec("python", 
                 "C:\\Users\\User\\Documents\\NetBeansProjects\\NetworkTool\\src\\pip\\app\\process\\python\\read_ipaddr.py");
         return invoker.toMessages();
     }
     
     @Override
-    public String[] interfaceIdentifiers() throws IOException, NotInvokedProcessYetException{
-        ProcessInvoker invoker = new ProcessInvokerImpl();
+    public String[] interfaceIdentifiers() throws IOException, NotInvokedPythonProcessYetException{
+        ProcessInvoker invoker = new PythonProcessInvoker();
         invoker.exec("python", 
                 "C:\\Users\\User\\Documents\\NetBeansProjects\\NetworkTool\\src\\pip\\app\\process\\python\\network_interfaces.py");
         return invoker.toMessages();
@@ -35,7 +35,7 @@ public class NetworkConfigurationGatewayImpl implements NetworkConfigurationGate
 
     @Override
     public NetworkConfigurationPresenter createNetworkPresenter(String interfaceIdentifier) throws IOException, 
-            NotInvokedProcessYetException, InvalidIpAdderssV4FormatException {
+            NotInvokedPythonProcessYetException, InvalidIpAdderssV4FormatException {
         NetworkConfigurationPresenter presenter = new NetworkConfigurationPresenter();
         presenter.interfaceIdentifier = interfaceIdentifier;
         presenter.physicalAddress = getNetworkConfiguration(interfaceIdentifier, "AF_LINK","addr");
@@ -53,8 +53,8 @@ public class NetworkConfigurationGatewayImpl implements NetworkConfigurationGate
         return presenter;
     }
 
-    private String getNetworkConfiguration(String... args) throws IOException, NotInvokedProcessYetException {
-        ProcessInvoker invoker = new ProcessInvokerImpl();
+    private String getNetworkConfiguration(String... args) throws IOException, NotInvokedPythonProcessYetException {
+        ProcessInvoker invoker = new PythonProcessInvoker();
         invoker.exec("python", 
                 "C:\\Users\\User\\Documents\\NetBeansProjects\\NetworkTool\\src\\pip\\app\\process\\python\\network_conf.py", 
                 args[0], args[1], args[2]);
@@ -65,8 +65,8 @@ public class NetworkConfigurationGatewayImpl implements NetworkConfigurationGate
     @Override
     public InternetProtocol[] listHost
         (InternetProtocol network, InternetProtocol netmask) throws IOException, 
-                NotInvokedProcessYetException, InvalidIpAdderssV4FormatException {
-        ProcessInvoker invoker = new ProcessInvokerImpl();
+                NotInvokedPythonProcessYetException, InvalidIpAdderssV4FormatException {
+        ProcessInvoker invoker = new PythonProcessInvoker();
         invoker.exec("python",
                 "C:\\Users\\User\\Documents\\NetBeansProjects\\NetworkTool\\src\\pip\\app\\process\\python\\list_hosts.py",
                 network.toString(), netmask.toString());
@@ -77,8 +77,7 @@ public class NetworkConfigurationGatewayImpl implements NetworkConfigurationGate
         return hosts;
         
     }
-    
-    
+        
     
 
 }

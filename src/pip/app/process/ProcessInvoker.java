@@ -13,5 +13,5 @@ import java.io.IOException;
  */
 public interface ProcessInvoker {
     public void exec(String... commands) throws IOException;
-    public String[] toMessages() throws NotInvokedProcessYetException;
+    public String[] toMessages() throws NotInvokedPythonProcessYetException;
 }

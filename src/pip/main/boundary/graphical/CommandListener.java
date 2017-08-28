@@ -12,8 +12,8 @@ import pip.app.gateaway.NetworkConfigurationPresenter;
  *
  * @author User
  */
-public interface ChangeAcceptor {
+public interface CommandListener {
     public void onDisplayNetworkInterfaceIdentifier(Object identifier[]);
     public void onDetailNetworkInterfaceIdentifier(NetworkConfigurationPresenter presenter);
-    public void onDisplayAllHosts(Object hosts[]);
+    public void onDisplayAllHosts(InternetProtocol[] hosts);
 }

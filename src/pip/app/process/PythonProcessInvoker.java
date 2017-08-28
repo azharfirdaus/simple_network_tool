@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author User
  */
-public class ProcessInvokerAsyncImpl implements ProcessInvoker{
+public class PythonProcessInvoker implements ProcessInvoker{
     
     private boolean invoked = false;
     private String[] messages;
@@ -38,10 +38,11 @@ public class ProcessInvokerAsyncImpl implements ProcessInvoker{
     }
 
     @Override
-    public synchronized void exec(String... commands) throws IOException {
+    public void exec(String... commands) throws IOException {
         ProcessBuilder builder = new ProcessBuilder(commands);
         builder.redirectErrorStream(true);
         Process process = builder.start();
+        
         String[] bufferedMessages = buildUpMessagesFrom(process.getInputStream());
         setMessages(bufferedMessages);
         
@@ -49,9 +50,9 @@ public class ProcessInvokerAsyncImpl implements ProcessInvoker{
     }
     
     @Override
-    public String[] toMessages() throws NotInvokedProcessYetException {
+    public String[] toMessages() throws NotInvokedPythonProcessYetException {
         if(!isInvoked()){
-            throw new NotInvokedProcessYetException();
+            throw new NotInvokedPythonProcessYetException();
         }
         setAsNotInvoked();
         return messages;

@@ -14,23 +14,21 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import pip.app.gateaway.InternetProtocol;
 import pip.app.gateaway.NetworkConfigurationPresenter;
-import pip.app.process.NotInvokedProcessYetException;
-import pip.app.process.ProcessInvokerImpl;
-import pip.main.adapter.CommandAdapter;
-import pip.main.adapter.CommandListener;
-import pip.main.boundary.textual.IODelivery;
+import pip.app.process.NotInvokedPythonProcessYetException;
+import pip.main.interactor.IODelivery;
 
 /**
  *
  * @author User
  */
-public class MainFrame extends javax.swing.JFrame implements ChangeAcceptor{
-    private final CommandListener listener;
+public final class MainFrame extends javax.swing.JFrame implements CommandListener{
+    private IODelivery io;
+    
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
-        listener = new CommandAdapter(this);
+        io = new IODelivery(this);
         initComponents();
     }
 
@@ -54,6 +52,7 @@ public class MainFrame extends javax.swing.JFrame implements ChangeAcceptor{
         jScrollPane3 = new javax.swing.JScrollPane();
         list_interfaces = new javax.swing.JList<>();
         button_details = new javax.swing.JButton();
+        button_set_default = new javax.swing.JButton();
         panel_all_hosts = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table_all_hosts = new javax.swing.JTable();
@@ -130,8 +129,12 @@ public class MainFrame extends javax.swing.JFrame implements ChangeAcceptor{
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 0.1;
         jPanel1.add(button_details, gridBagConstraints);
+
+        button_set_default.setText("Set Default...");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(button_set_default, gridBagConstraints);
 
         panel_interfaces.add(jPanel1, java.awt.BorderLayout.WEST);
 
@@ -183,32 +186,27 @@ public class MainFrame extends javax.swing.JFrame implements ChangeAcceptor{
     }// </editor-fold>//GEN-END:initComponents
 
     private void button_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_refreshActionPerformed
-        // TODO add your handling code here:
-        IODelivery io = new IODelivery();
         try {
-            listener.callInteractor("interfaces");
-        } catch (IOException | NotInvokedProcessYetException | CommandAdapter.CommandIsNotFoundException | InternetProtocol.InvalidIpAdderssV4FormatException | CommandAdapter.EmptyCommandFoundException ex) {
+            // TODO add your handling code here:
+            io.relayCommand("interfaces");
+        } catch (IOException | NotInvokedPythonProcessYetException | IODelivery.CommandIsNotFoundException | 
+                InternetProtocol.InvalidIpAdderssV4FormatException | IODelivery.EmptyCommandFoundException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_button_refreshActionPerformed
 
     private void button_detailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_detailsActionPerformed
-        // TODO add your handling code here:
         try {
-            listener.callInteractor("network_card_conf",
-                    list_interfaces.getModel().getElementAt(list_interfaces.getSelectedIndex()));
-        } catch (IOException | NotInvokedProcessYetException | CommandAdapter.CommandIsNotFoundException | InternetProtocol.InvalidIpAdderssV4FormatException | CommandAdapter.EmptyCommandFoundException ex) {
+            // TODO add your handling code here:
+            io.relayCommand("network_card_conf",list_interfaces.getSelectedValue());
+        } catch (IOException | NotInvokedPythonProcessYetException | IODelivery.CommandIsNotFoundException | 
+                InternetProtocol.InvalidIpAdderssV4FormatException | IODelivery.EmptyCommandFoundException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_button_detailsActionPerformed
 
     private void button_refresh_pingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_refresh_pingActionPerformed
-        try {
-            // TODO add your handling code here:
-            listener.callInteractor("list_hosts","192.168.1.0","255.255.255.0");
-        } catch (IOException | NotInvokedProcessYetException | CommandAdapter.CommandIsNotFoundException | InternetProtocol.InvalidIpAdderssV4FormatException | CommandAdapter.EmptyCommandFoundException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }//GEN-LAST:event_button_refresh_pingActionPerformed
 
     /**
@@ -240,6 +238,7 @@ public class MainFrame extends javax.swing.JFrame implements ChangeAcceptor{
     private javax.swing.JButton button_ping_all;
     private javax.swing.JButton button_refresh;
     private javax.swing.JButton button_refresh_ping;
+    private javax.swing.JButton button_set_default;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -264,7 +263,7 @@ public class MainFrame extends javax.swing.JFrame implements ChangeAcceptor{
 
     @Override
     public void onDetailNetworkInterfaceIdentifier(NetworkConfigurationPresenter presenter) {
-        Object model[][] = {
+        Object contents[][] = {
             {"identifier", presenter.interfaceIdentifier()},
             {"physical", presenter.physicalAddress()},
             {"host", presenter.host.toString()},
@@ -276,15 +275,17 @@ public class MainFrame extends javax.swing.JFrame implements ChangeAcceptor{
             {"broadcast v6", presenter.broadcastV6()},
         };
         String columnNames[] = {"Name", "Value"};
-        table_detail.setModel(new DefaultTableModel(model, columnNames));
+        
+        table_detail.setModel(new DefaultTableModel(contents, columnNames));
     }
 
     @Override
-    public void onDisplayAllHosts(Object hosts[]) {
+    public void onDisplayAllHosts(InternetProtocol[] hosts) {
         
         table_all_hosts.setModel(new AbstractTableModel() {
             
             private final  String[] columns = {"host", "status"};
+            
             
             @Override
             public int getColumnCount(){

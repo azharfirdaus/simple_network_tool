@@ -9,9 +9,9 @@ import java.io.IOException;
 import pip.app.gateaway.InternetProtocol;
 import pip.app.gateaway.InternetProtocol.InvalidIpAdderssV4FormatException;
 import pip.app.gateaway.NetworkConfigurationPresenter;
-import pip.app.gateaway.NetworkConfigurationGatewayImpl;
-import pip.app.process.NotInvokedProcessYetException;
-import pip.app.gateaway.NetworkConfigurationGateway;
+import pip.app.gateaway.ConfigurationGatewayImpl;
+import pip.app.process.NotInvokedPythonProcessYetException;
+import pip.app.gateaway.ConfigurationGateway;
 
 /**
  *
@@ -19,25 +19,25 @@ import pip.app.gateaway.NetworkConfigurationGateway;
  */
 public class Interactor{
 
-    public String[] getHostname() throws IOException, NotInvokedProcessYetException {
-        NetworkConfigurationGateway gateaway = new NetworkConfigurationGatewayImpl();
+    String[] getHostname() throws IOException, NotInvokedPythonProcessYetException {
+        ConfigurationGateway gateaway = new ConfigurationGatewayImpl();
         return gateaway.hostname();
     }
 
-    public String[] getNetworkInterfaceIdentifier() throws IOException, NotInvokedProcessYetException {
-        NetworkConfigurationGateway gateaway = new NetworkConfigurationGatewayImpl();
+    String[] getNetworkInterfaceIdentifier() throws IOException, NotInvokedPythonProcessYetException {
+        ConfigurationGateway gateaway = new ConfigurationGatewayImpl();
         return gateaway.interfaceIdentifiers();
     }
     
-    public NetworkConfigurationPresenter getNetworkInfoPresenter(String command) throws IOException, 
-            NotInvokedProcessYetException, InvalidIpAdderssV4FormatException {
-        NetworkConfigurationGateway gateaway = new NetworkConfigurationGatewayImpl();
+    NetworkConfigurationPresenter getNetworkInfoPresenter(String command) throws IOException, 
+            NotInvokedPythonProcessYetException, InvalidIpAdderssV4FormatException {
+        ConfigurationGateway gateaway = new ConfigurationGatewayImpl();
         return gateaway.createNetworkPresenter(command);
     }
 
-    public InternetProtocol[] getAllHosts(String network, String netmask) throws IOException, 
-            InvalidIpAdderssV4FormatException, NotInvokedProcessYetException {
-        NetworkConfigurationGateway gateaway = new NetworkConfigurationGatewayImpl();
+    InternetProtocol[] getAllHosts(String network, String netmask) throws IOException, 
+            InvalidIpAdderssV4FormatException, NotInvokedPythonProcessYetException {
+        ConfigurationGateway gateaway = new ConfigurationGatewayImpl();
         return gateaway.listHost(new InternetProtocol(network), new InternetProtocol(netmask));
     }
     
