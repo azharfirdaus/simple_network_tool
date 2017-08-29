@@ -5,20 +5,20 @@
  */
 package pip.main.interactor;
 
-import pip.app.gateaway.InternetProtocol;
+import pip.app.gateaway.NetworkConfigurationPresenter;
 
 /**
  *
  * @author User
  */
 public class GlobalSetting {
-    private static InternetProtocol defaultInUse = null;
+    private static NetworkConfigurationPresenter defaultInUse = null;
 
-    public static InternetProtocol getDefaultInUse() {
+    public static NetworkConfigurationPresenter getDefaultInUse() {
         return defaultInUse;
     }
 
-    public static void setDefaultInUse(InternetProtocol defaultInUse) {
+    public static void setDefaultInUse(NetworkConfigurationPresenter defaultInUse) {
         GlobalSetting.defaultInUse = defaultInUse;
     }
 }

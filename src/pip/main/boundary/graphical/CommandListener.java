@@ -16,4 +16,5 @@ public interface CommandListener {
     public void onDisplayNetworkInterfaceIdentifier(Object identifier[]);
     public void onDetailNetworkInterfaceIdentifier(NetworkConfigurationPresenter presenter);
     public void onDisplayAllHosts(InternetProtocol[] hosts);
+    public void onSetDefaultInterface(NetworkConfigurationPresenter presenter);
 }

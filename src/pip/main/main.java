@@ -28,12 +28,12 @@ public class main {
      * @throws pip.app.gateaway.InternetProtocol.InvalidIpAdderssV4FormatException
      */
     public static void main(String[] args) throws IOException, NotInvokedPythonProcessYetException, CommandIsNotFoundException, 
-            InvalidIpAdderssV4FormatException, EmptyCommandFoundException {
+            InvalidIpAdderssV4FormatException, EmptyCommandFoundException, IODelivery.InvalidParameterFoundException {
         IODelivery io = new IODelivery();
-        io.relayCommand("ipaddr");
-        io.relayCommand("interfaces");
-        io.relayCommand("network_interface","{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
-        io.relayCommand("list_hosts","192.168.1.0","255.255.255.0");
+        io.identifyCommand("ipaddr");
+        io.identifyCommand("interfaces");
+        io.identifyCommand("network_interface","{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
+        io.identifyCommand("list_hosts","192.168.1.0","255.255.255.0");
     }
     
 }

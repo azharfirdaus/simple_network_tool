@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 import pip.app.gateaway.InternetProtocol;
 import pip.app.gateaway.NetworkConfigurationPresenter;
 import pip.app.process.NotInvokedPythonProcessYetException;
+import pip.main.interactor.GlobalSetting;
 import pip.main.interactor.IODelivery;
 
 /**
@@ -22,7 +23,7 @@ import pip.main.interactor.IODelivery;
  * @author User
  */
 public final class MainFrame extends javax.swing.JFrame implements CommandListener{
-    private IODelivery io;
+    private final IODelivery io;
     
     /**
      * Creates new form MainFrame
@@ -132,6 +133,11 @@ public final class MainFrame extends javax.swing.JFrame implements CommandListen
         jPanel1.add(button_details, gridBagConstraints);
 
         button_set_default.setText("Set Default...");
+        button_set_default.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_set_defaultActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel1.add(button_set_default, gridBagConstraints);
@@ -188,9 +194,10 @@ public final class MainFrame extends javax.swing.JFrame implements CommandListen
     private void button_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_refreshActionPerformed
         try {
             // TODO add your handling code here:
-            io.relayCommand("interfaces");
+            io.identifyCommand("interfaces");
         } catch (IOException | NotInvokedPythonProcessYetException | IODelivery.CommandIsNotFoundException | 
-                InternetProtocol.InvalidIpAdderssV4FormatException | IODelivery.EmptyCommandFoundException ex) {
+                InternetProtocol.InvalidIpAdderssV4FormatException | IODelivery.EmptyCommandFoundException | 
+                IODelivery.InvalidParameterFoundException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_button_refreshActionPerformed
@@ -198,16 +205,32 @@ public final class MainFrame extends javax.swing.JFrame implements CommandListen
     private void button_detailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_detailsActionPerformed
         try {
             // TODO add your handling code here:
-            io.relayCommand("network_card_conf",list_interfaces.getSelectedValue());
+            io.identifyCommand("network_conf",list_interfaces.getSelectedValue());
         } catch (IOException | NotInvokedPythonProcessYetException | IODelivery.CommandIsNotFoundException | 
-                InternetProtocol.InvalidIpAdderssV4FormatException | IODelivery.EmptyCommandFoundException ex) {
+                InternetProtocol.InvalidIpAdderssV4FormatException | IODelivery.EmptyCommandFoundException | 
+                IODelivery.InvalidParameterFoundException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_button_detailsActionPerformed
 
     private void button_refresh_pingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_refresh_pingActionPerformed
-        
+        try {
+            io.identifyCommand("list_host",GlobalSetting.getDefaultInUse().host.toString(), 
+                    GlobalSetting.getDefaultInUse().netmask.toString());
+        } catch (IOException | NotInvokedPythonProcessYetException | IODelivery.CommandIsNotFoundException | InternetProtocol.InvalidIpAdderssV4FormatException | IODelivery.EmptyCommandFoundException | IODelivery.InvalidParameterFoundException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_button_refresh_pingActionPerformed
+
+    private void button_set_defaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_set_defaultActionPerformed
+        try {
+            io.identifyCommand("network_conf", "--default-use", list_interfaces.getSelectedValue());
+        } catch (IOException | NotInvokedPythonProcessYetException | IODelivery.CommandIsNotFoundException | 
+                InternetProtocol.InvalidIpAdderssV4FormatException | IODelivery.EmptyCommandFoundException | 
+                IODelivery.InvalidParameterFoundException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_button_set_defaultActionPerformed
 
     /**
      * @param args the command line arguments
@@ -315,5 +338,10 @@ public final class MainFrame extends javax.swing.JFrame implements CommandListen
             }
         });
         
+    }
+
+    @Override
+    public void onSetDefaultInterface(NetworkConfigurationPresenter presenter) {
+        System.out.println("onSetDefaultInterface");
     }
 }

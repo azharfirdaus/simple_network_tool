@@ -22,6 +22,7 @@ import pip.main.interactor.IODelivery;
 import pip.app.gateaway.ConfigurationGateway;
 import pip.main.interactor.IODelivery.CommandIsNotFoundException;
 import pip.main.interactor.IODelivery.EmptyCommandFoundException;
+import pip.main.interactor.IODelivery.InvalidParameterFoundException;
 
 /**
  *
@@ -42,20 +43,21 @@ public class PipNetworkToolJUnitTest {
     
     @Test
     public void testAvailableCommands() throws IOException, NotInvokedPythonProcessYetException, 
-            CommandIsNotFoundException, InvalidIpAdderssV4FormatException, EmptyCommandFoundException{
-        ui.relayCommand("ipaddr");
-        ui.relayCommand("interfaces");
-        ui.relayCommand("network_interface","{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
-        ui.relayCommand("network_interface","{FEA67A50-93FD-46BE-AE31-BD927CD1C2F4}");
-        ui.relayCommand("network_interface", "--set-default", "{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
-        ui.relayCommand("list_hosts","192.168.1.0", "255.255.255.0");
+            CommandIsNotFoundException, InvalidIpAdderssV4FormatException, EmptyCommandFoundException, 
+            InvalidParameterFoundException{
+        ui.identifyCommand("ipaddr");
+        ui.identifyCommand("interfaces");
+        ui.identifyCommand("network_conf","{FEA67A50-93FD-46BE-AE31-BD927CD1C2F4}");
+        ui.identifyCommand("network_conf", "--default-use", "{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
+        ui.identifyCommand("list_host","192.168.1.0", "255.255.255.0");
     }
     
+    @Ignore
     @Test(expected = EmptyCommandFoundException.class)
     public void givenEmptyCommand_throwEmptyCommandFoundException() throws IOException, 
             NotInvokedPythonProcessYetException, CommandIsNotFoundException, InvalidIpAdderssV4FormatException, 
-            EmptyCommandFoundException{
-        ui.relayCommand("");
+            EmptyCommandFoundException, InvalidParameterFoundException{
+        ui.identifyCommand("");
     }
     
     @Ignore
@@ -64,7 +66,8 @@ public class PipNetworkToolJUnitTest {
             InternetProtocol.InvalidIpAdderssV4FormatException, CommandIsNotFoundException{
         
         ConfigurationGateway gateway = new ConfigurationGatewayImpl();
-        NetworkConfigurationPresenter info = gateway.createNetworkPresenter("{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
+        NetworkConfigurationPresenter info = 
+                gateway.createNetworkPresenter("{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}");
         Assert.assertEquals("{DE5DD19E-C88D-4B89-B17C-0D188A9C97A8}", info.interfaceIdentifier());
         Assert.assertEquals("70:5a:0f:29:58:5f", info.physicalAddress());
         Assert.assertEquals("0.0.0.0", info.host.toString());
@@ -75,7 +78,8 @@ public class PipNetworkToolJUnitTest {
 //        Assert.assertEquals("ffff:ffff:ffff:ffff::/64", info.netmaskV6());
 //        Assert.assertEquals("fe80::ffff:ffff:ffff:ffff%16", info.broadcastV6());
         
-        NetworkConfigurationPresenter info2 = gateway.createNetworkPresenter("{A07174A1-7014-4639-B93A-83291AC99679}");
+        NetworkConfigurationPresenter info2 = 
+                gateway.createNetworkPresenter("{A07174A1-7014-4639-B93A-83291AC99679}");
         Assert.assertEquals("{A07174A1-7014-4639-B93A-83291AC99679}", info2.interfaceIdentifier());
         Assert.assertEquals("0a:00:27:00:00:25", info2.physicalAddress());
         Assert.assertEquals("192.168.56.1", info2.host.toString());
